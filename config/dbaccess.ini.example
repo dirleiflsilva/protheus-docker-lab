@@ -1,0 +1,11 @@
+[General]
+LicenseServer=license
+LicensePort=5555
+
+[POSTGRES/protheus]
+ConnectionMode=2
+ConnectionString=DRIVER={PostgreSQL};SERVERNAME=postgres-iniciado;PORT=5432;DATABASE=protheus;USERNAME=postgres;PASSWORD=postgres
+
+[POSTGRES]
+environments=protheus
+ClientLibrary=/usr/lib64/libodbc.so

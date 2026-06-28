@@ -1,0 +1,37 @@
+services:
+  license:
+    image: ${LICENSE_IMAGE}
+    container_name: ${COMPOSE_PROJECT_NAME}-license
+    restart: unless-stopped
+
+  postgres-iniciado:
+    image: ${POSTGRES_IMAGE}
+    container_name: ${COMPOSE_PROJECT_NAME}-postgres
+    restart: unless-stopped
+
+  dbaccess-postgres:
+    image: ${DBACCESS_IMAGE}
+    container_name: ${COMPOSE_PROJECT_NAME}-dbaccess
+    restart: unless-stopped
+    depends_on:
+      - postgres-iniciado
+      - license
+    volumes:
+      - ./config/dbaccess.ini:/opt/totvs/dbaccess/multi/dbaccess.ini:ro
+
+  appserver:
+    image: ${APPSERVER_IMAGE}
+    container_name: ${COMPOSE_PROJECT_NAME}-appserver
+    restart: unless-stopped
+    depends_on:
+      - dbaccess-postgres
+      - license
+    volumes:
+      - ./config/appserver.ini:/opt/totvs/appserver/appserver.ini:ro
+      - ./volumes/apo/tttm120.rpo:/opt/totvs/protheus/apo/tttm120.rpo
+      - ./volumes/systemload/sx2.unq:/opt/totvs/protheus/protheus_data/systemload/sx2.unq:ro
+      - ./volumes/systemload/sxsbra.txt:/opt/totvs/protheus/protheus_data/systemload/sxsbra.txt:ro
+      - ./volumes/logs:/opt/totvs/appserver/logs
+    ports:
+      - "${APPSERVER_PORT}:1234"
+      - "${WEBAPP_PORT}:8080"

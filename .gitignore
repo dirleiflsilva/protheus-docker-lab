@@ -1,0 +1,22 @@
+# Environment and local configuration
+.env
+config/*.ini
+!config/*.ini.example
+
+# Local Protheus artifacts
+files/*
+!files/.gitkeep
+
+# Runtime volumes and logs
+volumes/**/*
+!volumes/apo/
+!volumes/apo/.gitkeep
+!volumes/systemload/
+!volumes/systemload/.gitkeep
+!volumes/logs/
+!volumes/logs/.gitkeep
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
