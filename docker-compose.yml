@@ -13,6 +13,9 @@ services:
     image: ${DBACCESS_IMAGE}
     container_name: ${COMPOSE_PROJECT_NAME}-dbaccess
     restart: unless-stopped
+    command: >
+      sh -c "ln -sf /usr/lib64/psqlodbcw.so /usr/lib64/libpsqlodbc.so
+      && ./dbaccess64"
     depends_on:
       - postgres-iniciado
       - license

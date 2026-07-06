@@ -12,13 +12,10 @@ Trace=0
 localdbextension=.dtc
 TopMemoMega=1
 StartSysInDB=1
-
-[DBAccess]
-DataBase=POSTGRES
-Server=dbaccess-postgres
-Alias=protheus
-ProtheusOnly=0
-Port=7890
+DBDataBase=POSTGRES
+DBAlias=PROTHEUS
+DBServer=dbaccess-postgres
+DBPort=7890
 
 [general]
 buildkillusers=1
