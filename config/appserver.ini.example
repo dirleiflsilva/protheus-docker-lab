@@ -1,4 +1,4 @@
-[PROTHEUS-DOCKER]
+[PROTHEUS_DOCKER]
 SourcePath=/opt/totvs/protheus/apo
 RpoCustom=/opt/totvs/protheus/apo/custom.rpo
 RootPath=/opt/totvs/protheus/protheus_data
@@ -12,12 +12,16 @@ Trace=0
 localdbextension=.dtc
 TopMemoMega=1
 StartSysInDB=1
-DBDataBase=POSTGRES
-DBAlias=PROTHEUS
-DBServer=dbaccess-postgres
-DBPort=7890
+
+[DBAccess]
+DataBase=POSTGRES
+Server=dbaccess-postgres
+Alias=protheus
+ProtheusOnly=0
+Port=7890
 
 [general]
+app_environment=PROTHEUS_DOCKER
 buildkillusers=1
 consolelog=1
 consolefile=/opt/totvs/appserver/console.log
@@ -35,7 +39,7 @@ port=1234
 [webapp]
 enable=1
 port=8080
-envserver=PROTHEUS-DOCKER
+envserver=PROTHEUS_DOCKER
 lastmainprog=SIGAADV,SIGACFG,APSDU
 hideparamsform=0
 

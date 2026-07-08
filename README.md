@@ -27,7 +27,9 @@ host Linux
 │
 ├── config/
 │   ├── appserver.ini
-│   └── dbaccess.ini
+│   ├── dbaccess.ini
+│   ├── odbc.ini
+│   └── odbcinst.ini
 │
 └── volumes/
     ├── apo/
@@ -62,11 +64,57 @@ Copie o arquivo de variáveis:
 cp .env.example .env
 ```
 
-Copie os arquivos de configuração de exemplo:
+Copie a configuração do AppServer:
 
 ```bash
 cp config/appserver.ini.example config/appserver.ini
-cp config/dbaccess.ini.example config/dbaccess.ini
+```
+
+Gere a configuração efetiva do DBAccess:
+
+```bash
+./scripts/generate-dbaccess.sh
+```
+
+Esse script executa o `dbaccesscfg` da própria imagem definida em `.env` e gera:
+
+- `config/dbaccess.ini`, com a senha codificada no formato esperado pelo DBAccess;
+- `config/odbc.ini`, com o DSN `protheus`;
+- `config/odbcinst.ini`, registrando o driver ANSI `psqlodbca.so`.
+
+> O arquivo `config/dbaccess.ini` efetivo deve ser gerado pelo script para evitar corrupção da senha codificada.
+> Os arquivos `config/odbc.ini` e `config/odbcinst.ini` também são locais e são montados diretamente no container do DBAccess.
+
+A estrutura esperada do `config/dbaccess.ini` gerado é:
+
+```ini
+[General]
+MAXSTRINGSIZE=100
+LicenseServer=license
+LicensePort=5555
+AdjustColName=1
+ConsoleLog=1
+ConsoleMaxSize=20971520
+CountAllConnections=1
+ODBC30=1
+ODBCConnectionPool=1
+Port=7890
+ReleaseInactiveConn=30
+ShowAllErrors=0
+UseLargeRecno=1
+AuditLog=0
+
+[POSTGRES/protheus]
+user=postgres
+password=<senha codificada pelo dbaccesscfg>
+TableSpace=
+IndexSpace=
+ConnectionMode=2
+ConnectionString=DRIVER={PostgreSQL};SERVERNAME=postgres-iniciado;PORT=5432;DATABASE=protheus;USERNAME=postgres;PASSWORD=postgres
+
+[POSTGRES]
+environments=protheus
+ClientLibrary=/usr/lib64/libodbc.so
 ```
 
 Crie os diretórios de volumes locais, caso ainda não existam:
@@ -86,6 +134,8 @@ cp files/sx2.unq volumes/systemload/sx2.unq
 
 > Os arquivos em `files/` e `volumes/` são locais do laboratório e não devem ser publicados no repositório.
 > O RPO em `volumes/apo/` é uma cópia de trabalho do laboratório; mantenha uma origem limpa fora de `volumes/` caso precise restaurar o ambiente.
+> No container AppServer, a pasta `volumes/systemload` é montada inteira e com permissão de escrita. Neste lab, o AppServer reportou `SXSBRA.TXT not found` quando a pasta foi montada como somente leitura.
+> Os arquivos de `systemload` permanecem em minúsculas no host para seguir o padrão esperado em instalações Linux.
 
 Antes de subir o ambiente, valide os arquivos obrigatórios:
 
@@ -133,7 +183,7 @@ docker compose logs -f appserver
 
 ## Ambiente Protheus
 
-O AppServer usa o ambiente `PROTHEUS-DOCKER`, definido em `config/appserver.ini`.
+O AppServer usa o ambiente `PROTHEUS_DOCKER`, definido em `config/appserver.ini`.
 Os caminhos do exemplo oficial em Windows foram adaptados para os diretórios Linux usados dentro do container:
 
 | Configuração | Caminho no container |
@@ -161,7 +211,8 @@ O `docker-compose.yml` descreve os serviços necessários para subir o ambiente 
 
 ### 2. Configuração como código
 
-Arquivos de exemplo como `.env.example`, `appserver.ini.example` e `dbaccess.ini.example` ficam organizados e versionáveis.
+Arquivos de exemplo como `.env.example` e `appserver.ini.example` ficam organizados e versionáveis.
+O `dbaccess.ini` efetivo é gerado pelo `scripts/generate-dbaccess.sh`, pois contém senha codificada pelo `dbaccesscfg`.
 Os arquivos reais de ambiente permanecem locais e fora do Git.
 
 ### 3. Isolamento
@@ -186,7 +237,8 @@ A estrutura pode evoluir para incluir healthchecks, backup/restore do PostgreSQL
 
 ## Limitações conhecidas
 
-- O `depends_on` do Docker Compose controla ordem de inicialização, mas não garante que PostgreSQL, DBAccess ou License Server estejam prontos para uso.
+- O PostgreSQL usa `healthcheck` com `pg_isready`, e o DBAccess só inicia depois que o banco fica `healthy`.
+- O `depends_on` do Docker Compose controla a ordem de inicialização dos demais serviços, mas não substitui validações funcionais completas.
 - As variáveis em `.env` parametrizam o Compose, mas os arquivos `.ini` de exemplo ainda usam valores explícitos para facilitar a leitura inicial.
 - O RPO base deve ser carregado pelo `SourcePath`; `RpoCustom` fica reservado para customizações e não deve apontar para o RPO base.
 - Os artefatos Protheus, como RPO e arquivos de systemload, precisam ser obtidos separadamente e mantidos fora do Git.
@@ -199,7 +251,7 @@ REST, serviços adicionais e cenários corporativos ficam para etapas futuras, m
 
 | Parte | Tema | Status |
 |---|---|---|
-| 1 | **Criando um laboratório Protheus com Docker** | Em andamento |
+| 1 | **Criando um laboratório Protheus com Docker** | Validado |
 | 2 | Organização do projeto e boas práticas com Docker Compose | Planejado |
 | 3 | Automatizando o ambiente com scripts e Makefile | Planejado |
 | 4 | Gerenciamento de configurações com `.env` | Planejado |
@@ -216,10 +268,9 @@ REST, serviços adicionais e cenários corporativos ficam para etapas futuras, m
 
 ## Próximas evoluções possíveis
 
-- adicionar healthchecks no Docker Compose;
 - criar script de backup do PostgreSQL;
 - incluir Makefile;
 - adicionar GitHub Actions apenas para validação dos arquivos;
-- documentar troubleshooting;
+- evoluir a documentação de troubleshooting conforme novos cenários aparecerem;
 - incluir logs centralizados;
 - estudar uso com fontes AdvPL/TL++ versionados.

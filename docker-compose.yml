@@ -8,32 +8,43 @@ services:
     image: ${POSTGRES_IMAGE}
     container_name: ${COMPOSE_PROJECT_NAME}-postgres
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h localhost -p ${POSTGRES_PORT}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
 
   dbaccess-postgres:
     image: ${DBACCESS_IMAGE}
     container_name: ${COMPOSE_PROJECT_NAME}-dbaccess
     restart: unless-stopped
     command: >
-      sh -c "ln -sf /usr/lib64/psqlodbcw.so /usr/lib64/libpsqlodbc.so
+      sh -c "ln -sf /usr/lib64/libodbc.so /usr/lib64/libpsqlodbc.so
       && ./dbaccess64"
     depends_on:
-      - postgres-iniciado
-      - license
+      postgres-iniciado:
+        condition: service_healthy
+      license:
+        condition: service_started
     volumes:
       - ./config/dbaccess.ini:/opt/totvs/dbaccess/multi/dbaccess.ini:ro
+      - ./config/odbc.ini:/etc/odbc.ini:ro
+      - ./config/odbcinst.ini:/etc/odbcinst.ini:ro
 
   appserver:
     image: ${APPSERVER_IMAGE}
     container_name: ${COMPOSE_PROJECT_NAME}-appserver
     restart: unless-stopped
     depends_on:
-      - dbaccess-postgres
-      - license
+      dbaccess-postgres:
+        condition: service_started
+      license:
+        condition: service_started
     volumes:
       - ./config/appserver.ini:/opt/totvs/appserver/appserver.ini:ro
       - ./volumes/apo/tttm120.rpo:/opt/totvs/protheus/apo/tttm120.rpo
-      - ./volumes/systemload/sx2.unq:/opt/totvs/protheus/protheus_data/systemload/sx2.unq:ro
-      - ./volumes/systemload/sxsbra.txt:/opt/totvs/protheus/protheus_data/systemload/sxsbra.txt:ro
+      - ./volumes/systemload:/opt/totvs/protheus/protheus_data/systemload
       - ./volumes/logs:/opt/totvs/appserver/logs
     ports:
       - "${APPSERVER_PORT}:1234"

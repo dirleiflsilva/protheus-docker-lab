@@ -1,0 +1,7 @@
+[protheus]
+Driver=PostgreSQL
+Servername=postgres-iniciado
+Port=5432
+Database=protheus
+Username=postgres
+Password=postgres

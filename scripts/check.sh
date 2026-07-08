@@ -5,6 +5,8 @@ required_files=(
   ".env"
   "config/appserver.ini"
   "config/dbaccess.ini"
+  "config/odbc.ini"
+  "config/odbcinst.ini"
   "volumes/apo/tttm120.rpo"
   "volumes/systemload/sx2.unq"
   "volumes/systemload/sxsbra.txt"
