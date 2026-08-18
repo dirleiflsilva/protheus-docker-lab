@@ -266,7 +266,7 @@ O `scripts/check.sh` valida a preparação mínima antes do `docker compose up`.
 
 ### 5. Base para evolução
 
-A estrutura pode evoluir para incluir healthchecks, backup/restore do PostgreSQL, pipeline CI/CD, validações automáticas e observabilidade.
+A estrutura pode evoluir para incluir automação local, backup/restore do PostgreSQL, atualização controlada das imagens e validações básicas no GitHub Actions.
 
 ## O que não é objetivo deste laboratório
 
@@ -286,21 +286,16 @@ A estrutura pode evoluir para incluir healthchecks, backup/restore do PostgreSQL
 
 ## Roadmap da série
 
-Este repositório é o primeiro passo de uma série de laboratórios sobre Protheus, Docker e práticas DevOps.
-REST, serviços adicionais e cenários corporativos ficam para etapas futuras, mantendo este primeiro ambiente simples, reproduzível e estável.
+Este repositório organiza uma série enxuta de cinco partes sobre Protheus, Docker e práticas iniciais de DevOps.
+O objetivo é validar conceitos essenciais em um ambiente de desenvolvimento. REST, observabilidade centralizada e cenários corporativos ficam para outros laboratórios.
 
 | Parte | Tema | Status |
 |---|---|---|
-| 1 | **Criando um laboratório Protheus com Docker** | Validado |
+| 1 | Criando um laboratório Protheus com Docker | Validado |
 | 2 | Organização do projeto e boas práticas com Docker Compose | Validado |
-| 3 | Automatizando o ambiente com scripts e Makefile | Planejado |
-| 4 | Gerenciamento de configurações com `.env` | Planejado |
-| 5 | Persistência de dados e volumes Docker | Planejado |
-| 6 | Atualizando imagens do Protheus com segurança | Planejado |
-| 7 | Integrando o laboratório com GitHub Actions | Planejado |
-| 8 | Observabilidade: logs do AppServer e DBAccess | Planejado |
-| 9 | Backup e restauração do PostgreSQL no laboratório | Planejado |
-| 10 | Do laboratório ao DevOps: o que muda em um ambiente corporativo? | Planejado |
+| 3 | Automação e configuração local | Planejado |
+| 4 | Dados e manutenção do ambiente | Planejado |
+| 5 | Validação DevOps e limites do laboratório | Planejado |
 
 ## Referências
 
@@ -308,9 +303,10 @@ REST, serviços adicionais e cenários corporativos ficam para etapas futuras, m
 
 ## Próximas evoluções possíveis
 
-- criar script de backup do PostgreSQL;
-- incluir Makefile;
-- adicionar GitHub Actions apenas para validação dos arquivos;
-- evoluir a documentação de troubleshooting conforme novos cenários aparecerem;
-- incluir logs centralizados;
-- estudar uso com fontes AdvPL/TL++ versionados.
+Após concluir as cinco partes, novos repositórios ou laboratórios podem explorar:
+
+- serviços REST e componentes adicionais do ecossistema Protheus;
+- observabilidade e centralização de logs;
+- pipelines corporativos de entrega;
+- uso com fontes AdvPL/TL++ versionados;
+- requisitos de segurança, disponibilidade e operação que não se aplicam a estas imagens de desenvolvimento.
