@@ -46,6 +46,46 @@ host Linux
 | `dbaccess-postgres` | Camada DBAccess para comunicação entre AppServer e PostgreSQL |
 | `appserver` | AppServer Protheus |
 
+## Organização com Docker Compose
+
+O Compose agrupa os recursos pelo valor de `COMPOSE_PROJECT_NAME`, definido no arquivo `.env`.
+Os nomes dos containers são gerados automaticamente a partir do projeto e do serviço, evitando colisões com outros ambientes e mantendo o arquivo compatível com os recursos nativos do Compose.
+
+Para comandos operacionais e comunicação entre containers, utilize os nomes dos serviços, não nomes de containers ou endereços IP:
+
+```bash
+docker compose logs -f appserver
+docker compose exec dbaccess-postgres sh
+```
+
+O laboratório utiliza a rede padrão criada pelo Compose. Nessa rede, cada serviço pode localizar os demais pelo DNS interno:
+
+| Origem | Destino interno | Porta |
+|---|---|---|
+| `appserver` | `license` | `5555` |
+| `appserver` | `dbaccess-postgres` | `7890` |
+| `dbaccess-postgres` | `postgres-iniciado` | `5432` |
+
+Somente as portas do AppServer e do WebApp são publicadas no host. As portas do PostgreSQL, DBAccess e License Server não são publicadas e são destinadas à comunicação interna do projeto.
+
+### Ordem de inicialização
+
+O PostgreSQL possui um `healthcheck` com `pg_isready`. O DBAccess usa `condition: service_healthy` e só é iniciado depois que o banco aceita conexões.
+
+Para License Server e DBAccess, `condition: service_started` garante apenas a ordem de criação dos containers. Não significa que esses serviços estejam funcionalmente prontos. Healthchecks adicionais só devem ser incluídos depois de validar comandos ou endpoints compatíveis com as imagens TOTVS utilizadas pelo laboratório.
+
+### Montagens locais
+
+As configurações são montadas como somente leitura. Os diretórios que precisam receber dados do ambiente permanecem graváveis:
+
+| Conteúdo | Modo | Motivo |
+|---|---|---|
+| `config/appserver.ini` | somente leitura | Configuração do AppServer |
+| `config/dbaccess.ini` e arquivos ODBC | somente leitura | Configuração gerada localmente |
+| `volumes/apo/tttm120.rpo` | leitura e escrita | RPO de trabalho do laboratório |
+| `volumes/systemload/` | leitura e escrita | O AppServer exige escrita ou lock neste ambiente |
+| `volumes/logs/` | leitura e escrita | Persistência dos logs do AppServer |
+
 ## Pré-requisitos
 
 - Linux Mint, Ubuntu ou distribuição compatível;
@@ -252,7 +292,7 @@ REST, serviços adicionais e cenários corporativos ficam para etapas futuras, m
 | Parte | Tema | Status |
 |---|---|---|
 | 1 | **Criando um laboratório Protheus com Docker** | Validado |
-| 2 | Organização do projeto e boas práticas com Docker Compose | Planejado |
+| 2 | Organização do projeto e boas práticas com Docker Compose | Validado |
 | 3 | Automatizando o ambiente com scripts e Makefile | Planejado |
 | 4 | Gerenciamento de configurações com `.env` | Planejado |
 | 5 | Persistência de dados e volumes Docker | Planejado |

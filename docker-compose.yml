@@ -1,12 +1,10 @@
 services:
   license:
     image: ${LICENSE_IMAGE}
-    container_name: ${COMPOSE_PROJECT_NAME}-license
     restart: unless-stopped
 
   postgres-iniciado:
     image: ${POSTGRES_IMAGE}
-    container_name: ${COMPOSE_PROJECT_NAME}-postgres
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h localhost -p ${POSTGRES_PORT}"]
@@ -17,7 +15,6 @@ services:
 
   dbaccess-postgres:
     image: ${DBACCESS_IMAGE}
-    container_name: ${COMPOSE_PROJECT_NAME}-dbaccess
     restart: unless-stopped
     command: >
       sh -c "ln -sf /usr/lib64/libodbc.so /usr/lib64/libpsqlodbc.so
@@ -34,7 +31,6 @@ services:
 
   appserver:
     image: ${APPSERVER_IMAGE}
-    container_name: ${COMPOSE_PROJECT_NAME}-appserver
     restart: unless-stopped
     depends_on:
       dbaccess-postgres:

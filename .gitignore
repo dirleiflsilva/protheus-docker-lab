@@ -7,6 +7,10 @@ config/*.ini
 files/*
 !files/.gitkeep
 
+# Local agent configuration and skills
+AGENTS.md
+.agents/skills/
+
 # Runtime volumes and logs
 volumes/**/*
 !volumes/apo/
