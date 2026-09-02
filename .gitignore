@@ -10,6 +10,7 @@ files/*
 # Local agent configuration and skills
 AGENTS.md
 .agents/skills/
+.worktrees/
 
 # Runtime volumes and logs
 volumes/**/*
