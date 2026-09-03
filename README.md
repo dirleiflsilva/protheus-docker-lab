@@ -98,25 +98,47 @@ As configurações são montadas como somente leitura. Os diretórios que precis
 
 ## Preparação
 
-Copie o arquivo de variáveis:
+Coloque os artefatos obtidos para o laboratório em `files/`:
 
 ```bash
-cp .env.example .env
+files/tttm120.rpo
+files/sxsbra.txt
+files/sx2.unq
 ```
 
-Copie a configuração do AppServer:
+Execute a preparação automática:
 
 ```bash
-cp config/appserver.ini.example config/appserver.ini
+./scripts/setup.sh
 ```
 
-Gere a configuração efetiva do DBAccess:
+O script:
+
+- verifica a disponibilidade do Docker e do Docker Compose;
+- cria `.env` e `config/appserver.ini` somente quando estão ausentes;
+- cria os diretórios de volumes;
+- copia os artefatos de `files/` sem sobrescrever cópias de trabalho existentes;
+- informa quais artefatos obrigatórios estão ausentes ou vazios;
+- gera as configurações do DBAccess na primeira preparação ou com `--force`;
+- executa a validação final sem iniciar os containers.
+
+Os arquivos editáveis e as cópias de trabalho existentes são preservados. As três configurações derivadas do DBAccess são tratadas como um conjunto: se todas existirem, são reutilizadas; se apenas parte delas existir, a preparação solicita regeneração explícita.
+
+Para atualizar as cópias de trabalho com os artefatos disponíveis em `files/` e regenerar o conjunto do DBAccess, use:
+
+```bash
+./scripts/setup.sh --force
+```
+
+Essa opção pode substituir o RPO e os arquivos de `systemload` dos volumes de trabalho. Ela não altera `.env`, `config/appserver.ini`, o banco PostgreSQL nem os volumes de dados do banco.
+
+Para recriar essa configuração depois de alterar `.env`, execute diretamente:
 
 ```bash
 ./scripts/generate-dbaccess.sh
 ```
 
-Esse script executa o `dbaccesscfg` da própria imagem definida em `.env` e gera:
+O gerador executa o `dbaccesscfg` da própria imagem definida em `.env` e cria:
 
 - `config/dbaccess.ini`, com a senha codificada no formato esperado pelo DBAccess;
 - `config/odbc.ini`, com o DSN `protheus`;
@@ -157,19 +179,20 @@ environments=protheus
 ClientLibrary=/usr/lib64/libodbc.so
 ```
 
-Crie os diretórios de volumes locais, caso ainda não existam:
+### Preparação manual
+
+Se quiser executar cada etapa separadamente:
 
 ```bash
+cp .env.example .env
+chmod 600 .env
+cp config/appserver.ini.example config/appserver.ini
 mkdir -p volumes/apo volumes/systemload volumes/logs
-```
-
-Copie os arquivos do Protheus para os diretórios esperados pelo `docker-compose.yml`.
-Se você mantiver os artefatos temporariamente em `files/`, use:
-
-```bash
 cp files/tttm120.rpo volumes/apo/tttm120.rpo
 cp files/sxsbra.txt volumes/systemload/sxsbra.txt
 cp files/sx2.unq volumes/systemload/sx2.unq
+./scripts/generate-dbaccess.sh
+./scripts/check.sh
 ```
 
 > Os arquivos em `files/` e `volumes/` são locais do laboratório e não devem ser publicados no repositório.
@@ -182,6 +205,16 @@ Antes de subir o ambiente, valide os arquivos obrigatórios:
 ```bash
 ./scripts/check.sh
 ```
+
+Os scripts `setup.sh`, `check.sh` e `generate-dbaccess.sh` podem ser chamados de qualquer diretório. O arquivo `.env` é interpretado pelo próprio Docker Compose e não é executado como código Shell.
+
+Além dos arquivos obrigatórios, `check.sh` valida:
+
+- Docker e Docker Compose;
+- variáveis obrigatórias e portas configuradas;
+- configuração efetiva do Compose;
+- arquivos ausentes, vazios, ilegíveis ou que não sejam regulares;
+- correspondência básica entre `.env`, `appserver.ini`, `dbaccess.ini` e `odbc.ini`.
 
 ## Subindo o laboratório
 
@@ -293,9 +326,17 @@ O objetivo é validar conceitos essenciais em um ambiente de desenvolvimento. RE
 |---|---|---|
 | 1 | Criando um laboratório Protheus com Docker | Validado |
 | 2 | Organização do projeto e boas práticas com Docker Compose | Validado |
-| 3 | Automação e configuração local | Planejado |
+| 3 | Automação e configuração local | Validado |
 | 4 | Dados e manutenção do ambiente | Planejado |
 | 5 | Validação DevOps e limites do laboratório | Planejado |
+
+## Testes dos scripts
+
+Os testes usam um Docker simulado e não iniciam containers nem baixam imagens:
+
+```bash
+./tests/test-scripts.sh
+```
 
 ## Referências
 
