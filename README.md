@@ -241,11 +241,30 @@ Ou:
 docker compose logs -f appserver
 ```
 
-## Derrubando o ambiente
+## Pausando e retomando o ambiente
+
+Para interromper o uso e continuar com os mesmos containers e dados:
+
+```bash
+./scripts/stop.sh
+./scripts/start.sh
+```
+
+`start.sh` inicia apenas containers já criados. Na primeira inicialização, use `up.sh`.
+
+## Removendo os containers
+
+O comando abaixo remove os containers. Faça backup antes: o PostgreSQL desta imagem usa um volume anônimo, que não é reutilizado automaticamente após `down` seguido de `up`.
 
 ```bash
 ./scripts/down.sh
 ```
+
+Para o uso diário, prefira `stop.sh` e `start.sh`. Consulte os procedimentos de [dados e manutenção](docs/parte-4/README.md) antes de recriar containers.
+
+## Parte 4 — Dados e manutenção
+
+Os procedimentos de persistência, backup do PostgreSQL, restauração em banco separado e manutenção estão no [README da parte 4](docs/parte-4/README.md), junto das evidências de validação e dos limites dessa etapa.
 
 ## Portas expostas
 
@@ -327,7 +346,7 @@ O objetivo é validar conceitos essenciais em um ambiente de desenvolvimento. RE
 | 1 | Criando um laboratório Protheus com Docker | Validado |
 | 2 | Organização do projeto e boas práticas com Docker Compose | Validado |
 | 3 | Automação e configuração local | Validado |
-| 4 | Dados e manutenção do ambiente | Planejado |
+| 4 | [Dados e manutenção do ambiente](docs/parte-4/README.md) | Validado: backup e restauração em banco separado |
 | 5 | Validação DevOps e limites do laboratório | Planejado |
 
 ## Testes dos scripts

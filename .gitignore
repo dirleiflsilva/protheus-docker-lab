@@ -13,6 +13,7 @@ AGENTS.md
 .worktrees/
 
 # Runtime volumes and logs
+backups/
 volumes/**/*
 !volumes/apo/
 !volumes/apo/.gitkeep
