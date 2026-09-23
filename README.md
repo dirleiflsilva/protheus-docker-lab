@@ -266,6 +266,10 @@ Para o uso diário, prefira `stop.sh` e `start.sh`. Consulte os procedimentos de
 
 Os procedimentos de persistência, backup do PostgreSQL, restauração em banco separado e manutenção estão no [README da parte 4](docs/parte-4/README.md), junto das evidências de validação e dos limites dessa etapa.
 
+## Parte 5 — Validação DevOps e limites do laboratório
+
+O [workflow de validação](.github/workflows/validacao.yml) verifica a configuração do Compose com `.env.example`, a sintaxe Bash e os testes com Docker simulado em pushes e pull requests. Os comandos para reproduzir as verificações, a validação funcional complementar e os limites da série estão no [README da parte 5](docs/parte-5/README.md).
+
 ## Portas expostas
 
 | Porta | Uso |
@@ -318,7 +322,7 @@ O `scripts/check.sh` valida a preparação mínima antes do `docker compose up`.
 
 ### 5. Base para evolução
 
-A estrutura pode evoluir para incluir automação local, backup/restore do PostgreSQL, atualização controlada das imagens e validações básicas no GitHub Actions.
+A estrutura inclui automação local, backup/restore do PostgreSQL e validações básicas no GitHub Actions. Atualizações de imagens continuam exigindo validação de compatibilidade e plano de retorno.
 
 ## O que não é objetivo deste laboratório
 
@@ -347,7 +351,7 @@ O objetivo é validar conceitos essenciais em um ambiente de desenvolvimento. RE
 | 2 | Organização do projeto e boas práticas com Docker Compose | Validado |
 | 3 | Automação e configuração local | Validado |
 | 4 | [Dados e manutenção do ambiente](docs/parte-4/README.md) | Validado: backup e restauração em banco separado |
-| 5 | Validação DevOps e limites do laboratório | Planejado |
+| 5 | [Validação DevOps e limites do laboratório](docs/parte-5/README.md) | Implementado: CI e limites documentados; execução no GitHub pendente |
 
 ## Testes dos scripts
 

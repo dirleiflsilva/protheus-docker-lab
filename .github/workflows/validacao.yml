@@ -1,0 +1,36 @@
+name: Validação do laboratório
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validacao:
+    name: Compose e scripts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Obter o repositório
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Validar o Compose com valores de exemplo
+        run: docker compose --env-file .env.example -f docker-compose.yml config --quiet
+
+      - name: Validar a sintaxe dos scripts Bash
+        run: |
+          while IFS= read -r -d '' script; do
+            printf 'Validando %s\n' "$script"
+            bash -n "$script"
+          done < <(find scripts tests -type f -name '*.sh' -print0)
+
+      - name: Executar os testes com Docker simulado
+        run: ./tests/test-scripts.sh
