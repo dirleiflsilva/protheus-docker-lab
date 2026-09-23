@@ -270,6 +270,8 @@ Os procedimentos de persistência, backup do PostgreSQL, restauração em banco 
 
 O [workflow de validação](.github/workflows/validacao.yml) verifica a configuração do Compose com `.env.example`, a sintaxe Bash e os testes com Docker simulado em pushes e pull requests. Os comandos para reproduzir as verificações, a validação funcional complementar e os limites da série estão no [README da parte 5](docs/parte-5/README.md).
 
+A [execução do GitHub Actions referente ao commit `a4cd7ee`](https://github.com/dirleiflsilva/protheus-docker-lab/actions/runs/35935070926) foi concluída com sucesso em 23/09/2026, com aprovação da configuração do Compose, da sintaxe Bash e dos testes com Docker simulado. Essa evidência valida a CI da parte 5; a validação funcional do ERP permanece separada.
+
 ## Portas expostas
 
 | Porta | Uso |
@@ -351,7 +353,7 @@ O objetivo é validar conceitos essenciais em um ambiente de desenvolvimento. RE
 | 2 | Organização do projeto e boas práticas com Docker Compose | Validado |
 | 3 | Automação e configuração local | Validado |
 | 4 | [Dados e manutenção do ambiente](docs/parte-4/README.md) | Validado: backup e restauração em banco separado |
-| 5 | [Validação DevOps e limites do laboratório](docs/parte-5/README.md) | Implementado: CI e limites documentados; execução no GitHub pendente |
+| 5 | [Validação DevOps e limites do laboratório](docs/parte-5/README.md) | Validado: Compose, sintaxe Bash e testes aprovados no GitHub Actions |
 
 ## Testes dos scripts
 
