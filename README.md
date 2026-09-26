@@ -369,7 +369,7 @@ Os testes usam um Docker simulado e não iniciam containers nem baixam imagens:
 
 ## Próximas evoluções possíveis
 
-Após concluir as cinco partes, novos repositórios ou laboratórios podem explorar:
+Este laboratório está concluído dentro de seu objetivo de aprendizado e não possui um roadmap de continuidade. Como sugestões opcionais para estudos independentes, outros repositórios ou laboratórios podem explorar:
 
 - serviços REST e componentes adicionais do ecossistema Protheus;
 - observabilidade e centralização de logs;
